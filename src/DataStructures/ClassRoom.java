@@ -11,6 +11,7 @@ public class ClassRoom {
 
     public ClassRoom(){
         this.obstacles = new ArrayList<>();
+        this.tileSize = new PVector();
     }
 
     public ClassRoom(int width, int height,int horizontalTiles, int verticalTiles){
@@ -19,7 +20,8 @@ public class ClassRoom {
         this.height = height;
         this.horizontalTiles = horizontalTiles;
         this.verticalTiles = verticalTiles;
-        this.tileSize = (width*height)/(horizontalTiles*verticalTiles);
+        this.tileSize.x = width/horizontalTiles;
+        this.tileSize.y = height/verticalTiles;
     }
 
     public ArrayList<Obstacle> getObstacles() {
@@ -46,11 +48,11 @@ public class ClassRoom {
         this.height = height;
     }
 
-    public float getTileSize() {
+    public PVector getTileSize() {
         return tileSize;
     }
 
-    public void setTileSize(float tileSize) {
+    public void setTileSize(PVector tileSize) {
         this.tileSize = tileSize;
     }
 
@@ -86,5 +88,5 @@ public class ClassRoom {
     private int height;
     private int horizontalTiles;
     private int verticalTiles;
-    private float tileSize;
+    private PVector tileSize;
 }

@@ -66,31 +66,37 @@ public class Graph {
     }
 
     public void buildGraph(){
+        for(int x = 0; x < row; x++){
+            for(int y = 0; y < col; y++) {
+                Vertex v = new Vertex(x * row + y, x, y);
+                vertices.put(x * row + y, v);
+            }
+        }
+
         for(int x = 0; x < row; x++)
         {
             for(int y = 0; y < col; y++)
             {
                 if(invalidVertices.contains(x*row+y))
                     continue;
-                Vertex v = new Vertex(x*row+y,x,y);
-                vertices.put(x*row+y, v);
+
                 ArrayList<Edge> temp = new ArrayList<>();
-                if(y-1 > 0 && !invalidVertices.contains(x*row+y-1))
+                if(y-1 >= 0 && !invalidVertices.contains(x*row+y-1))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get(x*row+y-1),2.f));
-                if(x-1 > 0 && !invalidVertices.contains((x-1)*row+y))
+                if(x-1 >= 0 && !invalidVertices.contains((x-1)*row+y))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get((x-1)*row+y),2.f));
                 if(y+1 < col && !invalidVertices.contains(x*row+y+1))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get(x*row+y+1),2.f));
                 if(x+1 < row && !invalidVertices.contains((x+1)*row+y))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get((x+1)*row+y),2.f));
 
-                if(x-1 > 0 && y-1 > 0 && !invalidVertices.contains((x-1)*row+y-1))
+                if(x-1 >= 0 && y-1 >= 0 && !invalidVertices.contains((x-1)*row+y-1))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get((x-1)*row+y-1),(float)Math.sqrt(8)));
-                if(x+1 < row && y-1 > 0 && !invalidVertices.contains((x+1)*row+y-1))
+                if(x+1 < row && y-1 >= 0 && !invalidVertices.contains((x+1)*row+y-1))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get((x+1)*row+y-1),(float)Math.sqrt(8)));
                 if(x+1 < row && y+1 < col && !invalidVertices.contains((x+1)*row+y+1))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get((x+1)*row+y+1),(float)Math.sqrt(8)));
-                if(x-1 > 0 && y+1 < col && !invalidVertices.contains((x-1)*row+y+1))
+                if(x-1 >= 0 && y+1 < col && !invalidVertices.contains((x-1)*row+y+1))
                     temp.add(new Edge(vertices.get(x*row+y),vertices.get((x-1)*row+y+1),(float)Math.sqrt(8)));
 
                 vertexEdges.put(x*row+y,temp);
