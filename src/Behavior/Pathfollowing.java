@@ -25,7 +25,8 @@ public class Pathfollowing extends PApplet {
     int height = 1000;
     int HORIZONTAL_TILES = 50;
     int VERTICAL_TILES = 50;
-    int currTarget, pathOffset = 8;
+    int currTarget, pathOffset = 5;
+    int iterForTargetCorrection = 0;
     ArrayList<PVector> bestPath = new ArrayList<>();
 
     public ArrayList<PVector> getNewPath(ArrayList<Integer> Path){
@@ -83,7 +84,7 @@ public class Pathfollowing extends PApplet {
     }
 
     public void initPlayer(){
-        initPos = new PVector(width/2 - 25, height/2 - 25);
+        initPos = new PVector( 25, 25);
         player = new Agent();
         initTarget = new GameObject();
         player.setPosition(initPos);
@@ -117,6 +118,7 @@ public class Pathfollowing extends PApplet {
         myGraph = new Graph(HORIZONTAL_TILES,VERTICAL_TILES);
         buildingGameAI = new ClassRoom(width,height,HORIZONTAL_TILES,VERTICAL_TILES);
         buildingGameAI.createObstacles();
+        buildingGameAI.populateInvalidList();
 
         for(Obstacle obstacle:buildingGameAI.getObstacles()) {
             myGraph.getInvalidVertices().addAll(obstacle.getInvalidTiles());
@@ -129,7 +131,7 @@ public class Pathfollowing extends PApplet {
     }
 
     public void settings(){
-        size(800,800);
+        size(width,height);
     }
 
     public void setup(){
@@ -138,7 +140,7 @@ public class Pathfollowing extends PApplet {
     }
 
     public void draw(){
-        background(255);
+        background(150);
         time++;
         drawEnvironment();
         drawMovement();
@@ -146,16 +148,25 @@ public class Pathfollowing extends PApplet {
 
     public void drawEnvironment(){
         //drawObstacles
-        for(int i = 0; i < HORIZONTAL_TILES; i++) {
-            for (int j = 0; j < VERTICAL_TILES; j++) {
+        for(Obstacle obstacle : buildingGameAI.getObstacles())
+        {
+            for(int i : obstacle.getColoredTiles()) {
                 pushMatrix();
-                tile.setFill(170);
-                if(shortestPathAlgos.getBestPath().contains(j*VERTICAL_TILES+i))
-                    tile.setFill(color(0,0,255));
-                translate(i*buildingGameAI.getTileSize().x,j*buildingGameAI.getTileSize().y);
+                tile.setFill(color(obstacle.getColor().x, obstacle.getColor().y, obstacle.getColor().z));
+                tile.setStroke(color(obstacle.getColor().x, obstacle.getColor().y, obstacle.getColor().z));
+                translate((i % VERTICAL_TILES) * buildingGameAI.getTileSize().x, (i / VERTICAL_TILES) * buildingGameAI.getTileSize().y);
                 shape(tile);
                 popMatrix();
             }
+        }
+        //drawpath
+        for(int i : shortestPathAlgos.getBestPath()) {
+            pushMatrix();
+            tile.setFill(color(0,0,255));
+            tile.setStroke(color(0,0,255));
+            translate((i % VERTICAL_TILES) * buildingGameAI.getTileSize().x, (i / VERTICAL_TILES) * buildingGameAI.getTileSize().y);
+            shape(tile);
+            popMatrix();
         }
 
     }
@@ -166,11 +177,11 @@ public class Pathfollowing extends PApplet {
 
         if(time-crumbTime > 3)
         {
-            //updateCrumbs();
+            updateCrumbs();
             crumbTime = time;
         }
 
-        //drawCrumbs();
+        drawCrumbs();
 
         pushMatrix();
         translate(player.getPosition().x,player.getPosition().y);
@@ -180,6 +191,7 @@ public class Pathfollowing extends PApplet {
     }
 
     public void mousePressed(){
+
         moveToMouseLoc();
     }
 
@@ -191,9 +203,32 @@ public class Pathfollowing extends PApplet {
         bestPath.clear();
         closedList.clear();
         PVector tpos = new PVector((int)(mouseX/buildingGameAI.getTileSize().x),(int)(mouseY/buildingGameAI.getTileSize().y));
+        iterForTargetCorrection = 1;
+        int index = (int)(tpos.y * VERTICAL_TILES + tpos.x);
+        while(buildingGameAI.getInvalidTiles().contains(index)){
+           if(!buildingGameAI.getInvalidTiles().contains(index - iterForTargetCorrection)){
+               index -= iterForTargetCorrection;
+           }else if(!buildingGameAI.getInvalidTiles().contains(index + iterForTargetCorrection)){
+               index += iterForTargetCorrection;
+           }else if(!buildingGameAI.getInvalidTiles().contains(index - iterForTargetCorrection * VERTICAL_TILES)){
+               index -= iterForTargetCorrection * VERTICAL_TILES;
+           }else if(!buildingGameAI.getInvalidTiles().contains(index + iterForTargetCorrection * VERTICAL_TILES)){
+               index += iterForTargetCorrection * VERTICAL_TILES;
+           }else if(!buildingGameAI.getInvalidTiles().contains(index - iterForTargetCorrection * VERTICAL_TILES - iterForTargetCorrection)){
+                index -= iterForTargetCorrection * VERTICAL_TILES - iterForTargetCorrection;
+           }else if(!buildingGameAI.getInvalidTiles().contains(index - iterForTargetCorrection * VERTICAL_TILES + iterForTargetCorrection)){
+                index -= iterForTargetCorrection * VERTICAL_TILES + iterForTargetCorrection;
+           }else if(!buildingGameAI.getInvalidTiles().contains(index + iterForTargetCorrection * VERTICAL_TILES - iterForTargetCorrection)){
+                index += iterForTargetCorrection * VERTICAL_TILES - iterForTargetCorrection;
+           }else if(!buildingGameAI.getInvalidTiles().contains(index + iterForTargetCorrection * VERTICAL_TILES + iterForTargetCorrection)){
+                index += iterForTargetCorrection * VERTICAL_TILES + iterForTargetCorrection;
+           }
+           iterForTargetCorrection++;
+        }
 
         PVector playerVertex = new PVector((int)(player.getPosition().x/buildingGameAI.getTileSize().x),(int)(player.getPosition().y/buildingGameAI.getTileSize().y));
-        shortestPathAlgos = new ShortestPath((int)(playerVertex.y * VERTICAL_TILES + playerVertex.x),(int)(tpos.y * VERTICAL_TILES + tpos.x));
+
+        shortestPathAlgos = new ShortestPath((int)(playerVertex.y * VERTICAL_TILES + playerVertex.x),index);
         shortestPathAlgos.FindPath(myGraph);
         closedList = shortestPathAlgos.getClosedList();
         bestPath = getNewPath(shortestPathAlgos.getBestPath());

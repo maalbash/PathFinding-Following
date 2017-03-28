@@ -13,6 +13,7 @@ public class Obstacle {
     public Obstacle(){
         this.tilePositions = new ArrayList<>();
         this.invalidTiles = new HashSet<>();
+        this.coloredTiles = new HashSet<>();
     }
 
     public Obstacle(PVector firstTilePosition,int width, int height, PVector obstacleColor, int horizontalTiles, int verticalTiles){
@@ -24,7 +25,16 @@ public class Obstacle {
         for(int i = (int)firstTilePosition.x; i < (int)firstTilePosition.x + width; i++){
             for(int j = (int)firstTilePosition.y; j < (int)firstTilePosition.y + height; j++){
                 this.tilePositions.add(new PVector(j,i));
+                this.coloredTiles.add(i*verticalTiles+j);
                 this.invalidTiles.add(i*verticalTiles+j);
+                this.invalidTiles.add(i*verticalTiles+j-1);
+                this.invalidTiles.add(i*verticalTiles+j+1);
+                this.invalidTiles.add((i-1)*verticalTiles+j);
+                this.invalidTiles.add((i+1)*verticalTiles+j);
+                this.invalidTiles.add((i-1)*verticalTiles+j-1);
+                this.invalidTiles.add((i-1)*verticalTiles+j+1);
+                this.invalidTiles.add((i+1)*verticalTiles+j-1);
+                this.invalidTiles.add((i+1)*verticalTiles+j+1);
             }
         }
     }
@@ -83,5 +93,15 @@ public class Obstacle {
     private PVector color;
     private ArrayList<PVector> tilePositions;
     private HashSet<Integer> invalidTiles; // for creating edges
+
+    public HashSet<Integer> getColoredTiles() {
+        return coloredTiles;
+    }
+
+    public void setColoredTiles(HashSet<Integer> coloredTiles) {
+        this.coloredTiles = coloredTiles;
+    }
+
+    private HashSet<Integer> coloredTiles;
 
 }
