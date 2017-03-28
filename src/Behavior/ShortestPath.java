@@ -133,7 +133,7 @@ public class ShortestPath {
                 prev = path.get(prev);
             }
         }
-        //bestPath.add(startIndex);
+        bestPath.add(startIndex);
         Collections.reverse(bestPath);
     }
 

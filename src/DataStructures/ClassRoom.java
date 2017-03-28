@@ -74,10 +74,10 @@ public class ClassRoom {
     }
 
     public void createObstacles(){
-        this.obstacles.add(new Obstacle(new PVector(50,50), 1,8,new PVector(255,0,0),horizontalTiles,verticalTiles)); //left wall
+        this.obstacles.add(new Obstacle(new PVector(0.05f * horizontalTiles,0.05f * verticalTiles), 4,40,new PVector(255,0,0),horizontalTiles,verticalTiles)); //left wall
         this.obstacles.add(new Obstacle(new PVector(width/4,height/4), 5,2,new PVector(255,0,0),horizontalTiles,verticalTiles)); //back seats
         this.obstacles.add(new Obstacle(new PVector(width/4,height/2), 5,2,new PVector(255,0,0),horizontalTiles,verticalTiles)); //front seats
-        this.obstacles.add(new Obstacle(new PVector(width - 100,50), 1,8,new PVector(255,0,0),horizontalTiles,verticalTiles)); //right wall
+        this.obstacles.add(new Obstacle(new PVector(0.05f * horizontalTiles,0.05f * verticalTiles), 4,40,new PVector(255,0,0),horizontalTiles,verticalTiles)); //right wall
         this.obstacles.add(new Obstacle(new PVector(width - 300,height - 200), 3,1,new PVector(255,0,0),horizontalTiles,verticalTiles)); //teacher desk front
         this.obstacles.add(new Obstacle(new PVector(width - 100,height - 200), 1,8,new PVector(255,0,0),horizontalTiles,verticalTiles)); //teacher desk side
     }

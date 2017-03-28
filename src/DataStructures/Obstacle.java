@@ -21,9 +21,9 @@ public class Obstacle {
         this.width = width;
         this.height = height;
         this.color = obstacleColor;
-        for(int i = (int)firstTilePosition.x; i <= (int)firstTilePosition.x + width; i++){
-            for(int j = (int)firstTilePosition.y; j <= (int)firstTilePosition.y + height; j++){
-                this.tilePositions.add(new PVector(i,j));
+        for(int i = (int)firstTilePosition.x; i < (int)firstTilePosition.x + width; i++){
+            for(int j = (int)firstTilePosition.y; j < (int)firstTilePosition.y + height; j++){
+                this.tilePositions.add(new PVector(j,i));
                 this.invalidTiles.add(i*verticalTiles+j);
             }
         }

@@ -25,7 +25,7 @@ public class Pathfollowing extends PApplet {
     int height = 1000;
     int HORIZONTAL_TILES = 50;
     int VERTICAL_TILES = 50;
-    int currTarget, pathOffset = 1;
+    int currTarget, pathOffset = 8;
     ArrayList<PVector> bestPath = new ArrayList<>();
 
     public ArrayList<PVector> getNewPath(ArrayList<Integer> Path){
@@ -41,13 +41,15 @@ public class Pathfollowing extends PApplet {
     public void playerUpdate(){
         if(bestPath == null || bestPath.size() == 0)
             return;
-        if(currTarget < bestPath.size() - 1){
-            if(currTarget + pathOffset <= bestPath.size() - 1)
-                currTarget += pathOffset;
-            else
-                currTarget = bestPath.size()-1;
+        if((PVector.sub(currTargetPos,player.getPosition())).mag() < 20f){
+            if(currTarget < bestPath.size() - 1){
+                if(currTarget + pathOffset <= bestPath.size() - 1)
+                    currTarget += pathOffset;
+                else
+                    currTarget = bestPath.size()-1;
 
-            currTargetPos = bestPath.get(currTarget);
+                currTargetPos = bestPath.get(currTarget);
+            }
         }
         updatedTarget = new GameObject(currTargetPos,0);
         PVector dir = PVector.sub(currTargetPos,player.getPosition());
@@ -102,7 +104,7 @@ public class Pathfollowing extends PApplet {
         head.setFill(0);
 
         crumbTime = 0;
-        Sarrive = new Smotion(3.f,2.f,5.f,20.f, 2.f);
+        Sarrive = new Smotion(5.f,2.f,5.f,20.f, 2.f);
         Salign = new Align( PConstants.PI/50, PConstants.PI/30,PConstants.PI/15, PConstants.PI/2, 10f );
         Sarrive.setPlayer(player);
         Sarrive.setTarget(initTarget);
@@ -116,9 +118,9 @@ public class Pathfollowing extends PApplet {
         buildingGameAI = new ClassRoom(width,height,HORIZONTAL_TILES,VERTICAL_TILES);
         buildingGameAI.createObstacles();
 
-//        for(Obstacle obstacle:buildingGameAI.getObstacles()) {
-//            myGraph.getInvalidVertices().addAll(obstacle.getInvalidTiles());
-//        }
+        for(Obstacle obstacle:buildingGameAI.getObstacles()) {
+            myGraph.getInvalidVertices().addAll(obstacle.getInvalidTiles());
+        }
         myGraph.buildGraph();
         shortestPathAlgos = new ShortestPath(HORIZONTAL_TILES/2,VERTICAL_TILES/2);
         shortestPathAlgos.setDijkstra(false);
