@@ -5,6 +5,11 @@ package DataStructures;
  */
 
 public class Edge {
+    public Edge(Vertex a, Vertex b, float cost){
+        this.fromVertex = a;
+        this.toVertex = b;
+        this.cost = cost;
+    }
     public Vertex getFromVertex() {
         return fromVertex;
     }

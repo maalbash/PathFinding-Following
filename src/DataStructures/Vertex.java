@@ -6,6 +6,14 @@ import processing.core.PVector;
 public class Vertex {
 
     public Vertex() {
+        this.pos = new PVector();
+    }
+
+    public Vertex(int ID, int i, int j){
+        this();
+        this.index = ID;
+        this.pos.x = i;
+        this.pos.y = j;
     }
 
     public PVector getPos() {

@@ -12,7 +12,8 @@ public class GameObject {
     float orientation;
 
     public GameObject(){
-
+        this.position = new PVector(0,0);
+        this.orientation = 0f;
     }
 
     public GameObject(PVector position, float orientation) {
