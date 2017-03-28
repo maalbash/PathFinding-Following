@@ -13,7 +13,7 @@ public class Pathfollowing extends PApplet {
     GameObject initTarget, updatedTarget;
     int startIndex, goalIndex;
     ShortestPath shortestPathAlgos;
-    PVector initPos;
+    PVector initPos, currTargetPos;
     Smotion Sarrive;
     Align Salign;
     ArrayList<PVector> crumbs;
@@ -21,24 +21,24 @@ public class Pathfollowing extends PApplet {
     Graph myGraph;
     ClassRoom buildingGameAI;
     HashSet<Integer> closedList = new HashSet<>();
-    int width = 800;
-    int height = 800;
-    int HORIZONTAL_TILES = 10;
-    int VERTICAL_TILES = 10;
-    int currTarget, pathOffset = 3;
+    int width = 1000;
+    int height = 1000;
+    int HORIZONTAL_TILES = 50;
+    int VERTICAL_TILES = 50;
+    int currTarget, pathOffset = 1;
     ArrayList<PVector> bestPath = new ArrayList<>();
 
     public ArrayList<PVector> getNewPath(ArrayList<Integer> Path){
         ArrayList<PVector> newPath = new ArrayList<>();
         currTarget = 0;
         for(int index : Path){
-            newPath.add(new PVector((index % HORIZONTAL_TILES)*buildingGameAI.getTileSize().x,(index % VERTICAL_TILES)*buildingGameAI.getTileSize().y));
+            newPath.add(new PVector((index % VERTICAL_TILES) * buildingGameAI.getTileSize().x + buildingGameAI.getTileSize().x/2,(index / VERTICAL_TILES)*buildingGameAI.getTileSize().y + buildingGameAI.getTileSize().y/2));
         }
+        currTargetPos = newPath.get(currTarget);
         return newPath;
     }
 
     public void playerUpdate(){
-        PVector currTargetPos = new PVector();
         if(bestPath == null || bestPath.size() == 0)
             return;
         if(currTarget < bestPath.size() - 1){
@@ -54,6 +54,13 @@ public class Pathfollowing extends PApplet {
         Sarrive.setTarget(updatedTarget);
         Salign.setTarget(updatedTarget);
         Salign.getTarget().setOrientation(dir.heading());
+        Sarrive.getSteering();
+        Salign.getSteering();
+        if (Salign.orientationReached() || (PVector.sub(updatedTarget.getPosition(),player.getPosition())).mag() < Sarrive.getRadiusOfSatisfaction()) {
+            player.setRotation(0);
+            player.setAngular(0);
+        }
+        player.update();
     }
 
     public void updateCrumbs(){
@@ -95,12 +102,13 @@ public class Pathfollowing extends PApplet {
         head.setFill(0);
 
         crumbTime = 0;
-        Sarrive = new Smotion(5.f,2.f,5.f,20.f, 2.f);
+        Sarrive = new Smotion(3.f,2.f,5.f,20.f, 2.f);
         Salign = new Align( PConstants.PI/50, PConstants.PI/30,PConstants.PI/15, PConstants.PI/2, 10f );
         Sarrive.setPlayer(player);
         Sarrive.setTarget(initTarget);
         Salign.setPlayer(player);
         Salign.setTarget(initTarget);
+        currTargetPos = new PVector();
     }
 
     public void initEnvironment(){
@@ -139,12 +147,9 @@ public class Pathfollowing extends PApplet {
         for(int i = 0; i < HORIZONTAL_TILES; i++) {
             for (int j = 0; j < VERTICAL_TILES; j++) {
                 pushMatrix();
-                if(closedList.contains(i*VERTICAL_TILES+j))
-                    tile.setFill(color(255,0,0));
-                else
-                    tile.setFill(170);
-//                if(shortestPathAlgos.getBestPath().contains(i*VERTICAL_TILES+j))
-//                    tile.setFill(color(0,0,255));
+                tile.setFill(170);
+                if(shortestPathAlgos.getBestPath().contains(j*VERTICAL_TILES+i))
+                    tile.setFill(color(0,0,255));
                 translate(i*buildingGameAI.getTileSize().x,j*buildingGameAI.getTileSize().y);
                 shape(tile);
                 popMatrix();
@@ -156,21 +161,14 @@ public class Pathfollowing extends PApplet {
     public void drawMovement(){
 
         playerUpdate();
-        Sarrive.getSteering();
-        Salign.getSteering();
-        if (Salign.orientationReached()) {
-            player.setRotation(0);
-            player.setAngular(0);
-        }
-        player.update();
 
         if(time-crumbTime > 3)
         {
-            updateCrumbs();
+            //updateCrumbs();
             crumbTime = time;
         }
 
-        drawCrumbs();
+        //drawCrumbs();
 
         pushMatrix();
         translate(player.getPosition().x,player.getPosition().y);
@@ -180,12 +178,20 @@ public class Pathfollowing extends PApplet {
     }
 
     public void mousePressed(){
+        moveToMouseLoc();
+    }
+
+    public void mouseDragged(){
+        moveToMouseLoc();
+    }
+
+    public void moveToMouseLoc(){
+        bestPath.clear();
+        closedList.clear();
         PVector tpos = new PVector((int)(mouseX/buildingGameAI.getTileSize().x),(int)(mouseY/buildingGameAI.getTileSize().y));
 
-        updatedTarget = new GameObject(tpos,0);
         PVector playerVertex = new PVector((int)(player.getPosition().x/buildingGameAI.getTileSize().x),(int)(player.getPosition().y/buildingGameAI.getTileSize().y));
-        shortestPathAlgos.setStart((int)(playerVertex.x * HORIZONTAL_TILES + playerVertex.y));
-        shortestPathAlgos.setEnd((int)(tpos.x * HORIZONTAL_TILES + tpos.y));
+        shortestPathAlgos = new ShortestPath((int)(playerVertex.y * VERTICAL_TILES + playerVertex.x),(int)(tpos.y * VERTICAL_TILES + tpos.x));
         shortestPathAlgos.FindPath(myGraph);
         closedList = shortestPathAlgos.getClosedList();
         bestPath = getNewPath(shortestPathAlgos.getBestPath());

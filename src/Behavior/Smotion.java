@@ -61,5 +61,18 @@ public class Smotion {
     }
 
 
-    float maxAccel,maxSpeed, radiusOfSatisfaction, radiusOfDeceleration, timeToTargetVelocity;
+    float maxAccel;
+    float maxSpeed;
+
+    public float getRadiusOfSatisfaction() {
+        return radiusOfSatisfaction;
+    }
+
+    public void setRadiusOfSatisfaction(float radiusOfSatisfaction) {
+        this.radiusOfSatisfaction = radiusOfSatisfaction;
+    }
+
+    float radiusOfSatisfaction;
+    float radiusOfDeceleration;
+    float timeToTargetVelocity;
 }

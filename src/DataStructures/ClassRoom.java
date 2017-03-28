@@ -20,8 +20,8 @@ public class ClassRoom {
         this.height = height;
         this.horizontalTiles = horizontalTiles;
         this.verticalTiles = verticalTiles;
-        this.tileSize.x = width/horizontalTiles;
-        this.tileSize.y = height/verticalTiles;
+        this.tileSize.x = width/verticalTiles;
+        this.tileSize.y = height/horizontalTiles;
     }
 
     public ArrayList<Obstacle> getObstacles() {

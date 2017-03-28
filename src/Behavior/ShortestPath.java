@@ -86,6 +86,7 @@ public class ShortestPath {
     public void FindPath(Graph G){
         int startIndex = getStart(),goalIndex = getEnd();
         int currentIndex, endNode;
+
         float cost = 0;
         this.maxSizeOL = 1;
         if(isDijkstra)
@@ -132,7 +133,7 @@ public class ShortestPath {
                 prev = path.get(prev);
             }
         }
-        bestPath.add(startIndex);
+        //bestPath.add(startIndex);
         Collections.reverse(bestPath);
     }
 
